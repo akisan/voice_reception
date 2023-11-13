@@ -50,8 +50,8 @@ if __name__ == "__main__":
     names = []
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("話してください:")
         while True:
+            print("話してください:")
             r.adjust_for_ambient_noise(source)
             audio = r.listen(source)
             print("音声認識中...")
@@ -59,11 +59,11 @@ if __name__ == "__main__":
                 text = r.recognize_google(audio, language="ja-JP")
                 print("あなたが言ったこと: " + text)
                 names = list(set(names + extract_nouns(text)))
-                print("人名: " + names)
+                print("人名: ", names)
                 filtered_data = [
                     record for record in data if any(name in record for name in names)
                 ]
-                print("検索結果: " + filtered_data)
+                print("検索結果: ", filtered_data)
             except sr.UnknownValueError:
                 print("Google Speech Recognition could not understand audio")
             except sr.RequestError as e:
