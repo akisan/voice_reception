@@ -1,6 +1,11 @@
 import MeCab
+from concurrent.futures import ThreadPoolExecutor
 import csv
+from dotenv import load_dotenv
+import os
 import speech_recognition as sr
+
+import cybozu
 
 
 def read_csv_file(file_name: str) -> list[list[str]]:
@@ -43,6 +48,10 @@ def extract_nouns(text: str) -> list[str]:
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    account = os.environ["CYBOZU_ACCOUNT"]
+    password = (os.environ["CYBOZU_PASSWORD"],)
+
     file_name = "users.csv"
     data = read_csv_file(file_name)
     print("読み込んだデータ: ", data)
@@ -64,6 +73,9 @@ if __name__ == "__main__":
                     record for record in data if any(name in record for name in names)
                 ]
                 print("検索結果: ", filtered_data)
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    for e in cybozu.get_events(account, password, 1920):
+                        print(e.text)
             except sr.UnknownValueError:
                 print("Google Speech Recognition could not understand audio")
             except sr.RequestError as e:
